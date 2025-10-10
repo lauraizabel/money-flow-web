@@ -3,8 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { X } from "lucide-react";
-import { Transaction } from "@/pages/Dashboard";
+import {
+  Transaction,
+  EXPENSE_CATEGORIES,
+  INCOME_CATEGORIES,
+} from "@/types/transaction";
 
 interface TransactionFormProps {
   onSubmit: (transaction: Omit<Transaction, "id">) => void;
@@ -18,21 +29,26 @@ export const TransactionForm = ({
   const [type, setType] = useState<"income" | "expense">("expense");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !description) return;
+    if (!amount || !description || !category) return;
 
     onSubmit({
       type,
       amount: parseFloat(amount),
       description,
+      category,
       date: new Date().toISOString().split("T")[0],
     });
 
     setAmount("");
     setDescription("");
+    setCategory("");
   };
+
+  const categories = type === "income" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
@@ -96,6 +112,22 @@ export const TransactionForm = ({
               onChange={(e) => setDescription(e.target.value)}
               required
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="category">Categoria</Label>
+            <Select value={category} onValueChange={setCategory} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione uma categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex gap-3 pt-4">

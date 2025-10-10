@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Trash2, TrendingUp, TrendingDown } from "lucide-react";
-import { Transaction } from "@/pages/Dashboard";
+import { Transaction } from "@/types/transaction";
 import { cn } from "@/lib/utils";
 
 interface TransactionListProps {
@@ -58,9 +58,13 @@ export const TransactionList = ({
             </div>
             <div className="flex-1">
               <p className="font-medium">{transaction.description}</p>
-              <p className="text-sm text-muted-foreground">
-                {formatDate(transaction.date)}
-              </p>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>{formatDate(transaction.date)}</span>
+                <span>•</span>
+                <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
+                  {transaction.category}
+                </span>
+              </div>
             </div>
           </div>
 

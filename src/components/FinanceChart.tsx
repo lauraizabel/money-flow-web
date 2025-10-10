@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Transaction } from "@/pages/Dashboard";
+import { Transaction } from "@/types/transaction";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 interface FinanceChartProps {
