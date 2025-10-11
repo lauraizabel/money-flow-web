@@ -5,6 +5,7 @@ export interface Transaction {
   description: string;
   date: string;
   category: string;
+  tags?: string[];
 }
 
 export const EXPENSE_CATEGORIES = [

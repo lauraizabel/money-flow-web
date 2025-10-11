@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { BalanceCard } from "@/components/BalanceCard";
 import { TransactionList } from "@/components/TransactionList";
 import { FinanceChart } from "@/components/FinanceChart";
+import { MonthlyComparisonChart } from "@/components/MonthlyComparisonChart";
+import { BalanceEvolutionChart } from "@/components/BalanceEvolutionChart";
 import { Transaction } from "@/types/transaction";
 
 interface DashboardContext {
@@ -49,16 +51,21 @@ const Overview = () => {
         />
       </div>
 
-      {/* Chart */}
-      <div className="mb-8">
+      {/* Charts */}
+      <div className="grid lg:grid-cols-2 gap-6 mb-8">
         <FinanceChart transactions={transactions} />
+        <MonthlyComparisonChart transactions={transactions} />
+      </div>
+
+      <div className="mb-8">
+        <BalanceEvolutionChart transactions={transactions} />
       </div>
 
       {/* Transactions List */}
       <Card className="p-6 bg-gradient-card shadow-soft border-border/50">
         <h2 className="text-2xl font-bold mb-6">Transações Recentes</h2>
         <TransactionList
-          transactions={transactions}
+          transactions={transactions.slice(0, 10)}
           onDelete={onDeleteTransaction}
         />
       </Card>

@@ -5,6 +5,9 @@ import {
   Settings,
   Wallet,
   ChevronRight,
+  Receipt,
+  Target,
+  FileText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -27,9 +30,19 @@ const menuItems = [
     icon: LayoutDashboard,
   },
   {
-    title: "Categorias",
-    url: "/dashboard/categories",
-    icon: PieChart,
+    title: "Transações",
+    url: "/dashboard/transactions",
+    icon: Receipt,
+  },
+  {
+    title: "Metas",
+    url: "/dashboard/goals",
+    icon: Target,
+  },
+  {
+    title: "Relatórios",
+    url: "/dashboard/reports",
+    icon: FileText,
   },
   {
     title: "Configurações",

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Plus } from "lucide-react";
 import { TransactionForm } from "@/components/TransactionForm";
 import { Transaction } from "@/types/transaction";
@@ -72,13 +73,16 @@ export const DashboardLayout = () => {
                   FinanceFlow
                 </span>
               </div>
-              <Button
-                onClick={() => setShowForm(true)}
-                className="gap-2 ml-auto"
-              >
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Nova Transação</span>
-              </Button>
+              <div className="flex items-center gap-2 ml-auto">
+                <ThemeToggle />
+                <Button
+                  onClick={() => setShowForm(true)}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden sm:inline">Nova Transação</span>
+                </Button>
+              </div>
             </div>
           </header>
 
