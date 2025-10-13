@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
@@ -9,10 +9,17 @@ import { TransactionForm } from "@/components/TransactionForm";
 import { CreateTransactionDto } from "@/dto/transaction/create-transaction.dto";
 import { transactionsService } from "@/services/transactions-service";
 import { useTransactionStore } from "@/stores/useTransactionStore";
+import { useCategoryStore } from "@/stores/useCategoryStore";
 
 export const DashboardLayout = () => {
   const [showForm, setShowForm] = useState(false);
-  const { transactions, setTransactions, fetchTransactions } = useTransactionStore();
+  const { transactions, fetchTransactions } = useTransactionStore();
+  const { fetchCategories } = useCategoryStore();
+
+  useEffect(() => {
+    fetchTransactions();
+    fetchCategories();
+  }, [fetchTransactions, fetchCategories]);
 
   const handleAddTransaction = async (transaction: CreateTransactionDto) => {
     await transactionsService.createTransaction(transaction);

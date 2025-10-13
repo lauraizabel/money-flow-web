@@ -1,12 +1,12 @@
 import { useState, useMemo } from "react";
 import { useOutletContext } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Transaction } from "@/types/transaction";
+import { TransactionModel } from "@/model/transaction-model";
 import { TransactionFilters } from "@/components/TransactionFilters";
 import { TransactionList } from "@/components/TransactionList";
 
 interface DashboardContext {
-  transactions: Transaction[];
+  transactions: TransactionModel[];
   onDeleteTransaction: (id: string) => void;
 }
 
@@ -28,13 +28,13 @@ const Transactions = () => {
         t.description.toLowerCase().includes(filters.search.toLowerCase());
 
       const matchesCategory =
-        filters.category === "all" || t.category === filters.category;
+        filters.category === "all" || t.category?.id === filters.category;
 
       const matchesDateFrom =
-        filters.dateFrom === "" || new Date(t.date) >= new Date(filters.dateFrom);
+        filters.dateFrom === "" || t.date >= new Date(filters.dateFrom);
 
       const matchesDateTo =
-        filters.dateTo === "" || new Date(t.date) <= new Date(filters.dateTo);
+        filters.dateTo === "" || t.date <= new Date(filters.dateTo);
 
       return matchesSearch && matchesCategory && matchesDateFrom && matchesDateTo;
     });

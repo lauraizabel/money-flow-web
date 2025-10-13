@@ -1,13 +1,13 @@
 import { useOutletContext } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Transaction } from "@/types/transaction";
+import { TransactionModel } from "@/model/transaction-model";
 import { MonthlyComparisonChart } from "@/components/MonthlyComparisonChart";
 import { BalanceEvolutionChart } from "@/components/BalanceEvolutionChart";
 import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { BalanceCard } from "@/components/BalanceCard";
 
 interface DashboardContext {
-  transactions: Transaction[];
+  transactions: TransactionModel[];
 }
 
 const Reports = () => {
@@ -17,16 +17,16 @@ const Reports = () => {
   const currentYear = new Date().getFullYear();
 
   const currentMonthTransactions = transactions.filter((t) => {
-    const date = new Date(t.date);
+    const date = t.date;
     return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
   });
 
   const totalIncome = currentMonthTransactions
-    .filter((t) => t.type === "income")
+    .filter((t) => t.isIncome)
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalExpense = currentMonthTransactions
-    .filter((t) => t.type === "expense")
+    .filter((t) => t.isExpense)
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = totalIncome - totalExpense;
@@ -74,12 +74,13 @@ const Reports = () => {
         <div className="space-y-4">
           {Object.entries(
             currentMonthTransactions
-              .filter((t) => t.type === "expense")
+              .filter((t) => t.isExpense)
               .reduce((acc, t) => {
-                if (!acc[t.category]) {
-                  acc[t.category] = 0;
+                const categoryName = t.category?.name || 'Sem categoria';
+                if (!acc[categoryName]) {
+                  acc[categoryName] = 0;
                 }
-                acc[t.category] += t.amount;
+                acc[categoryName] += t.amount;
                 return acc;
               }, {} as Record<string, number>)
           )
