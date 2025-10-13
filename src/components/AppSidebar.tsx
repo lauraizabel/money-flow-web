@@ -8,6 +8,7 @@ import {
   Receipt,
   Target,
   FileText,
+  FolderKanban,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +34,11 @@ const menuItems = [
     title: "Transações",
     url: "/dashboard/transactions",
     icon: Receipt,
+  },
+  {
+    title: "Categorias",
+    url: "/dashboard/categories",
+    icon: FolderKanban,
   },
   {
     title: "Metas",

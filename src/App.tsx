@@ -10,6 +10,7 @@ import { Login } from "./pages/auth/Login";
 import { Register } from "./pages/auth/Register";
 import Overview from "./pages/dashboard/Overview";
 import Transactions from "./pages/dashboard/Transactions";
+import Categories from "./pages/dashboard/Categories";
 import Goals from "./pages/dashboard/Goals";
 import Reports from "./pages/dashboard/Reports";
 import Settings from "./pages/dashboard/Settings";
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Overview />} />
             <Route path="transactions" element={<Transactions />} />
+            <Route path="categories" element={<Categories />} />
             <Route path="goals" element={<Goals />} />
             <Route path="reports" element={<Reports />} />
             <Route path="settings" element={<Settings />} />

@@ -14,6 +14,7 @@ import {
 import { CATEGORY_TYPE } from "@/const/category-type.const";
 import { useCategoryStore } from "@/stores/useCategoryStore";
 import { CreateTransactionDto } from "@/dto/transaction/create-transaction.dto";
+import { QuickCategoryCreate } from "@/components/QuickCategoryCreate";
 
 interface TransactionFormProps {
   onSubmit: (transaction: CreateTransactionDto) => void;
@@ -165,6 +166,7 @@ export const TransactionForm = ({
                 {renderCategories()}
               </SelectContent>
             </Select>
+            <QuickCategoryCreate type={type} onCategoryCreated={setCategory} />
           </div>
 
           <div className="flex gap-3 pt-4">
