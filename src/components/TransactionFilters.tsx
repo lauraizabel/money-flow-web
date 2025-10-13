@@ -8,8 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/types/transaction";
 import { Search } from "lucide-react";
+import { useCategories } from "@/hooks/use-categories";
 
 interface TransactionFiltersProps {
   onFilterChange: (filters: {
@@ -34,8 +34,7 @@ export const TransactionFilters = ({ onFilterChange }: TransactionFiltersProps) 
     onFilterChange(newFilters);
   };
 
-  const allCategories = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
-
+  const { data: categories } = useCategories();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <div className="relative">
@@ -63,9 +62,9 @@ export const TransactionFilters = ({ onFilterChange }: TransactionFiltersProps) 
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Todas</SelectItem>
-            {allCategories.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {cat}
+            {categories?.map((cat) => (
+              <SelectItem key={cat.id} value={cat.id}>
+                {cat.icon} {cat.name}
               </SelectItem>
             ))}
           </SelectContent>

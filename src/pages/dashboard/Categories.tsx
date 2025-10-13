@@ -24,13 +24,12 @@ const Categories = () => {
 
   const expenses = transactions.filter((t) => t.type === "expense");
 
-  // Agrupar por categoria
   const categoryData = expenses.reduce((acc, transaction) => {
-    const category = transaction.category;
-    if (!acc[category]) {
-      acc[category] = 0;
+    const categoryName = transaction.category?.name || 'Sem categoria';
+    if (!acc[categoryName]) {
+      acc[categoryName] = 0;
     }
-    acc[category] += transaction.amount;
+    acc[categoryName] += transaction.amount;
     return acc;
   }, {} as Record<string, number>);
 

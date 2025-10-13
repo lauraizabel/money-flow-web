@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Trash2, TrendingUp, TrendingDown } from "lucide-react";
-import { Transaction } from "@/types/transaction";
-import { cn } from "@/lib/utils";
+import { TransactionModel } from "@/model/transaction-model";
+import { cn, formatDateFromBackend } from "@/lib/utils";
 
 interface TransactionListProps {
-  transactions: Transaction[];
+  transactions: TransactionModel[];
   onDelete: (id: string) => void;
 }
 
@@ -17,10 +17,6 @@ export const TransactionList = ({
       style: "currency",
       currency: "BRL",
     }).format(value);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString + "T00:00:00").toLocaleDateString("pt-BR");
   };
 
   if (transactions.length === 0) {
@@ -45,12 +41,12 @@ export const TransactionList = ({
             <div
               className={cn(
                 "h-10 w-10 rounded-full flex items-center justify-center",
-                transaction.type === "income"
+                transaction.isIncome
                   ? "bg-success/10"
                   : "bg-destructive/10"
               )}
             >
-              {transaction.type === "income" ? (
+              {transaction.isIncome ? (
                 <TrendingUp className="h-5 w-5 text-success" />
               ) : (
                 <TrendingDown className="h-5 w-5 text-destructive" />
@@ -59,10 +55,10 @@ export const TransactionList = ({
             <div className="flex-1">
               <p className="font-medium">{transaction.description}</p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{formatDate(transaction.date)}</span>
+                <span>{formatDateFromBackend(transaction.date.toISOString())}</span>
                 <span>•</span>
                 <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
-                  {transaction.category}
+                  {transaction.category?.name || 'Sem categoria'}
                 </span>
               </div>
             </div>
@@ -72,12 +68,12 @@ export const TransactionList = ({
             <p
               className={cn(
                 "font-bold text-lg",
-                transaction.type === "income"
+                transaction.isIncome
                   ? "text-success"
                   : "text-destructive"
               )}
             >
-              {transaction.type === "income" ? "+" : "-"}
+              {transaction.isIncome ? "+" : "-"}
               {formatCurrency(transaction.amount)}
             </p>
             <Button

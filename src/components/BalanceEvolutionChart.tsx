@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Transaction } from "@/types/transaction";
+import { TransactionModel } from "@/model/transaction-model";
+import { formatDateForChart } from "@/lib/utils";
 import {
   LineChart,
   Line,
@@ -11,7 +12,7 @@ import {
 } from "recharts";
 
 interface BalanceEvolutionChartProps {
-  transactions: Transaction[];
+  transactions: TransactionModel[];
 }
 
 export const BalanceEvolutionChart = ({
@@ -23,14 +24,14 @@ export const BalanceEvolutionChart = ({
 
   let runningBalance = 0;
   const data = sortedTransactions.map((t) => {
-    if (t.type === "income") {
+    if (t.isIncome) {
       runningBalance += t.amount;
     } else {
       runningBalance -= t.amount;
     }
 
     return {
-      date: new Date(t.date).toLocaleDateString("pt-BR", {
+      date: formatDateForChart(t.date.toISOString(), {
         day: "2-digit",
         month: "short",
       }),

@@ -1,18 +1,19 @@
 import { Card } from "@/components/ui/card";
-import { Transaction } from "@/types/transaction";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { CATEGORY_TYPE } from "@/const/category-type.const";
+import { TransactionModel } from "@/model/transaction-model";
 
 interface FinanceChartProps {
-  transactions: Transaction[];
+  transactions: TransactionModel[];
 }
 
 export const FinanceChart = ({ transactions }: FinanceChartProps) => {
   const totalIncome = transactions
-    .filter((t) => t.type === "income")
+    .filter((t) => t.type === CATEGORY_TYPE.INCOME)
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalExpense = transactions
-    .filter((t) => t.type === "expense")
+    .filter((t) => t.type === CATEGORY_TYPE.EXPENSE)
     .reduce((sum, t) => sum + t.amount, 0);
 
   const data = [

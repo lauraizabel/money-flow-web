@@ -16,9 +16,9 @@ const Landing = () => {
               FinanceFlow
             </span>
           </div>
-          <Link to="/dashboard">
+          <Link to="/login">
             <Button variant="default" className="gap-2">
-              Acessar Dashboard
+              Entrar
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -43,7 +43,7 @@ const Landing = () => {
                 orçamento sempre sob controle. Simples, rápido e eficiente.
               </p>
               <div className="flex gap-4">
-                <Link to="/dashboard">
+                <Link to="/login">
                   <Button size="lg" className="gap-2 shadow-medium">
                     Começar Agora
                     <ArrowRight className="h-5 w-5" />
@@ -133,13 +133,13 @@ const Landing = () => {
             <p className="text-lg mb-8 text-white/90">
               Comece agora e tenha controle total do seu dinheiro
             </p>
-            <Link to="/dashboard">
+            <Link to="/login">
               <Button
                 size="lg"
                 variant="secondary"
                 className="gap-2 shadow-medium"
               >
-                Acessar Dashboard
+                Começar Agora
                 <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>

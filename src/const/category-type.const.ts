@@ -1,0 +1,4 @@
+export const CATEGORY_TYPE = {
+  EXPENSE: 'EXPENSE',
+  INCOME: 'INCOME',
+};

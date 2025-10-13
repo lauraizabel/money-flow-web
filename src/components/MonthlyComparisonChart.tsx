@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
-import { Transaction } from "@/types/transaction";
+import { TransactionModel } from "@/model/transaction-model";
+import { formatDateForChart } from "@/lib/utils";
 import {
   BarChart,
   Bar,
@@ -12,14 +13,14 @@ import {
 } from "recharts";
 
 interface MonthlyComparisonChartProps {
-  transactions: Transaction[];
+  transactions: TransactionModel[];
 }
 
 export const MonthlyComparisonChart = ({
   transactions,
 }: MonthlyComparisonChartProps) => {
   const monthlyData = transactions.reduce((acc, t) => {
-    const month = new Date(t.date).toLocaleDateString("pt-BR", {
+    const month = formatDateForChart(t.date.toISOString(), {
       month: "short",
       year: "numeric",
     });
@@ -28,7 +29,7 @@ export const MonthlyComparisonChart = ({
       acc[month] = { month, receitas: 0, despesas: 0 };
     }
 
-    if (t.type === "income") {
+    if (t.isIncome) {
       acc[month].receitas += t.amount;
     } else {
       acc[month].despesas += t.amount;

@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Serviço para desenvolvimento
+  money-flow-web-dev:
+    build:
+      context: .
+      target: dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    profiles:
+      - dev
+
+  # Serviço para produção
+  money-flow-web-prod:
+    build:
+      context: .
+      target: production
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    profiles:
+      - prod
+
+  # Serviço para build apenas
+  money-flow-web-build:
+    build:
+      context: .
+      target: builder
+    volumes:
+      - ./dist:/app/dist
+    profiles:
+      - build

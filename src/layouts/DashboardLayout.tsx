@@ -6,56 +6,23 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Plus } from "lucide-react";
 import { TransactionForm } from "@/components/TransactionForm";
-import { Transaction } from "@/types/transaction";
+import { CreateTransactionDto } from "@/dto/transaction/create-transaction.dto";
+import { transactionsService } from "@/services/transactions-service";
+import { useTransactionStore } from "@/stores/useTransactionStore";
 
 export const DashboardLayout = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([
-    {
-      id: "1",
-      type: "income",
-      amount: 3500,
-      description: "Salário",
-      date: "2025-01-05",
-      category: "Salário",
-    },
-    {
-      id: "2",
-      type: "expense",
-      amount: 150,
-      description: "Supermercado",
-      date: "2025-01-06",
-      category: "Alimentação",
-    },
-    {
-      id: "3",
-      type: "expense",
-      amount: 80,
-      description: "Internet",
-      date: "2025-01-07",
-      category: "Contas",
-    },
-    {
-      id: "4",
-      type: "expense",
-      amount: 45,
-      description: "Uber",
-      date: "2025-01-08",
-      category: "Transporte",
-    },
-  ]);
   const [showForm, setShowForm] = useState(false);
+  const { transactions, setTransactions, fetchTransactions } = useTransactionStore();
 
-  const handleAddTransaction = (transaction: Omit<Transaction, "id">) => {
-    const newTransaction = {
-      ...transaction,
-      id: Date.now().toString(),
-    };
-    setTransactions([newTransaction, ...transactions]);
+  const handleAddTransaction = async (transaction: CreateTransactionDto) => {
+    await transactionsService.createTransaction(transaction);
+    await fetchTransactions();
     setShowForm(false);
   };
 
   const handleDeleteTransaction = (id: string) => {
-    setTransactions(transactions.filter((t) => t.id !== id));
+    transactionsService.deleteTransaction(id);
+    fetchTransactions();
   };
 
   return (
