@@ -1,24 +1,20 @@
 import { Button } from "@/shared/ui/button";
-import { Trash2, TrendingUp, TrendingDown } from "lucide-react";
+import { Trash2, TrendingUp, TrendingDown, Edit } from "lucide-react";
 import { TransactionModel } from "@/shared/model/transaction.model";
 import { cn, formatDateFromBackend } from "@/shared/lib/utils";
+import { CurrencyHelper } from "@/shared/helpers/currency-helper";
 
 interface TransactionListProps {
   transactions: TransactionModel[];
   onDelete: (id: string) => void;
+  onEdit?: (transaction: TransactionModel) => void;
 }
 
 export const TransactionList = ({
   transactions,
   onDelete,
+  onEdit,
 }: TransactionListProps) => {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
   if (transactions.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
@@ -74,16 +70,28 @@ export const TransactionList = ({
               )}
             >
               {transaction.isIncome ? "+" : "-"}
-              {formatCurrency(transaction.amount)}
+              {CurrencyHelper.formatCurrency(transaction.amount)}
             </p>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onDelete(transaction.id)}
-              className="hover:bg-destructive/10 hover:text-destructive"
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-2">
+              {onEdit && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(transaction)}
+                  className="hover:bg-primary/10 hover:text-primary"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => onDelete(transaction.id)}
+                className="hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       ))}

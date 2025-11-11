@@ -1,44 +1,22 @@
-import { useState, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useEffect } from "react";
 import { Card } from "@/shared/ui/card";
-import { TransactionModel } from "@/shared/model/transaction.model";
 import { TransactionFilters } from "@/features/transactions/components/transaction-filters";
 import { TransactionList } from "@/features/transactions/components/transaction-list";
-
-interface DashboardContext {
-  transactions: TransactionModel[];
-  onDeleteTransaction: (id: string) => void;
-}
+import { useTransactionStore, TransactionFilters as TransactionFiltersType } from "../store/use-transaction-store";
+import { Loader2 } from "lucide-react";
 
 const Transactions = () => {
-  const { transactions, onDeleteTransaction } =
-    useOutletContext<DashboardContext>();
+  const { 
+    filteredTransactions, 
+    isLoading, 
+    deleteTransaction, 
+    setFilters, 
+    fetchTransactions 
+  } = useTransactionStore();
 
-  const [filters, setFilters] = useState({
-    search: "",
-    category: "all",
-    dateFrom: "",
-    dateTo: "",
-  });
-
-  const filteredTransactions = useMemo(() => {
-    return transactions.filter((t) => {
-      const matchesSearch =
-        filters.search === "" ||
-        t.description.toLowerCase().includes(filters.search.toLowerCase());
-
-      const matchesCategory =
-        filters.category === "all" || t.category?.id === filters.category;
-
-      const matchesDateFrom =
-        filters.dateFrom === "" || t.date >= new Date(filters.dateFrom);
-
-      const matchesDateTo =
-        filters.dateTo === "" || t.date <= new Date(filters.dateTo);
-
-      return matchesSearch && matchesCategory && matchesDateFrom && matchesDateTo;
-    });
-  }, [transactions, filters]);
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   return (
     <div className="container mx-auto px-4 py-8 animate-fade-in">
@@ -50,11 +28,19 @@ const Transactions = () => {
       </div>
 
       <Card className="p-6 bg-gradient-card shadow-soft border-border/50">
-        <TransactionFilters onFilterChange={setFilters} />
-        <TransactionList
-          transactions={filteredTransactions}
-          onDelete={onDeleteTransaction}
-        />
+        <TransactionFilters />
+        
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="ml-2 text-muted-foreground">Carregando transações...</span>
+          </div>
+        ) : (
+          <TransactionList
+            transactions={filteredTransactions}
+            onDelete={deleteTransaction}
+          />
+        )}
       </Card>
     </div>
   );

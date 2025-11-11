@@ -1,6 +1,7 @@
 import { Card } from "@/shared/ui/card";
 import { LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { CurrencyHelper } from "../helpers/currency-helper";
 
 interface BalanceCardProps {
   title: string;
@@ -15,13 +16,6 @@ export const BalanceCard = ({
   icon: Icon,
   variant,
 }: BalanceCardProps) => {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
-
   const variantStyles = {
     success: "bg-gradient-success text-white",
     destructive: "bg-destructive text-destructive-foreground",
@@ -39,7 +33,7 @@ export const BalanceCard = ({
         <h3 className="text-sm font-medium opacity-90">{title}</h3>
         <Icon className="h-5 w-5 opacity-90" />
       </div>
-      <p className="text-3xl font-bold">{formatCurrency(amount)}</p>
+      <p className="text-3xl font-bold">{CurrencyHelper.formatCurrency(amount)}</p>
     </Card>
   );
 };

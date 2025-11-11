@@ -1,82 +1,147 @@
-import { TrendingDown, TrendingUp, Wallet } from "lucide-react";
-import { useEffect } from "react";
+import { TrendingDown, TrendingUp, Wallet, Loader2 } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 
 import { Card } from "@/shared/ui/card";
 import { BalanceCard } from "@/shared/components/balance-card";
 import { TransactionList } from "@/features/transactions/components/transaction-list";
+import { EditTransactionForm } from "@/features/transactions/components/edit-transaction-form";
 import { FinanceChart } from "@/features/transactions/components/finance-chart";
 import { MonthlyComparisonChart } from "@/features/transactions/components/monthly-comparison-chart";
 import { BalanceEvolutionChart } from "@/features/transactions/components/balance-evolution-chart";
-import { useCategoryStore } from "@/features/categories/store/use-category-store";
+import { MonthSelector } from "@/features/transactions/components/month-selector";
 import { useTransactionStore } from "@/features/transactions/store/use-transaction-store";
-import { CATEGORY_TYPE } from "@/shared/constants/category-type.const";
+import { useReportStore } from "../store/use-report-store";
+import { TransactionModel } from "@/shared/model/transaction.model";
+import { UpdateTransactionDto } from "@/features/transactions/dto/update-transaction.dto";
 
 const Overview = () => {
-  const { fetchCategories } = useCategoryStore();
-  const { transactions, deleteTransaction, fetchTransactions } = useTransactionStore();
+  const { report, fetchReport, isLoading } = useReportStore();
+  const { deleteTransaction: deleteTransactionStore, updateTransaction: updateTransactionStore } = useTransactionStore();
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
+  const [editingTransaction, setEditingTransaction] = useState<TransactionModel | null>(null);
 
-  const totalIncome = transactions?.filter((t) => t.type === CATEGORY_TYPE.INCOME)
-    ?.reduce((sum, t) => sum + t.amount, 0);
+  const getMonthDateRange = (monthString: string) => {
+    const [year, month] = monthString.split('-').map(Number);
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
+    
+    return {
+      dateFrom: startDate.toISOString().split('T')[0],
+      dateTo: endDate.toISOString().split('T')[0],
+    };
+  };
 
-  const totalExpense = transactions
-    ?.filter((t) => t.type === CATEGORY_TYPE.EXPENSE)
-    ?.reduce((sum, t) => sum + t.amount, 0);
+  const fetchReportData = useCallback(async (month: string) => {
+    await fetchReport({
+      type: 'MONTHLY',
+      period: 'CUSTOM',
+      ...getMonthDateRange(month),
+    });
+  }, [fetchReport]);
 
-  const balance = totalIncome - totalExpense;
+  const handleMonthChange = (month: string) => {
+    setSelectedMonth(month);
+    fetchReportData(month);
+  };
+
+  const deleteTransaction = (id: string) => {
+    deleteTransactionStore(id);
+    fetchReportData(selectedMonth);
+  };
+
+  const handleEditTransaction = (transaction: TransactionModel) => {
+    setEditingTransaction(transaction);
+  };
+
+  const handleUpdateTransaction = async (id: string, transaction: UpdateTransactionDto) => {
+    await updateTransactionStore(id, transaction);
+    setEditingTransaction(null);
+    fetchReportData(selectedMonth);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTransaction(null);
+  };
 
   useEffect(() => {
-    const loadData = async () => {
-      await Promise.all([
-        fetchCategories(),
-        fetchTransactions()
-      ]);
-    };
-    loadData();
-  }, [fetchCategories, fetchTransactions]);
+    fetchReportData(selectedMonth);
+  }, [fetchReportData, selectedMonth]);
 
+  const monthlyTransactions = report?.transactions?.filter((transaction: TransactionModel) => {
+    const transactionMonth = new Date(transaction.date).toISOString().slice(0, 7);
+    return transactionMonth === selectedMonth;
+  }) || [];
 
   return (
     <div className="container mx-auto px-4 py-8 animate-fade-in">
-      {/* Balance Overview */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
-        <BalanceCard
-          title="Saldo Total"
-          amount={balance}
-          icon={Wallet}
-          variant={balance >= 0 ? "success" : "destructive"}
-        />
-        <BalanceCard
-          title="Receitas"
-          amount={totalIncome}
-          icon={TrendingUp}
-          variant="success"
-        />
-        <BalanceCard
-          title="Despesas"
-          amount={totalExpense}
-          icon={TrendingDown}
-          variant="destructive"
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold mb-2">Visão Geral</h1>
+          <p className="text-muted-foreground">
+            Acompanhe suas finanças e gastos mensais
+          </p>
+        </div>
+        <MonthSelector 
+          selectedMonth={selectedMonth} 
+          onMonthChange={handleMonthChange} 
         />
       </div>
 
-      {/* Charts */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2 text-muted-foreground">Carregando dados...</span>
+        </div>
+      ) : (
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <BalanceCard
+            title="Saldo Total"
+            amount={report?.summary.balance || 0}
+            icon={Wallet}
+            variant={(report?.summary.balance || 0) >= 0 ? "success" : "destructive"}
+          />
+          <BalanceCard
+            title="Receitas"
+            amount={report?.summary.totalIncome || 0}
+            icon={TrendingUp}
+            variant="success"
+          />
+          <BalanceCard
+            title="Despesas"
+            amount={report?.summary.totalExpense || 0}
+            icon={TrendingDown}
+            variant="destructive"
+          />
+        </div>
+      )}
+
       <div className="grid lg:grid-cols-2 gap-6 mb-8">
-        <FinanceChart transactions={transactions} />
-        <MonthlyComparisonChart transactions={transactions} />
+        <FinanceChart transactions={monthlyTransactions as TransactionModel[]} />
+        <MonthlyComparisonChart transactions={monthlyTransactions as TransactionModel[]} />
       </div>
 
       <div className="mb-8">
-        <BalanceEvolutionChart transactions={transactions} />
+        <BalanceEvolutionChart transactions={monthlyTransactions as TransactionModel[]} />
       </div>
 
-      {/* Transactions List */}
       <Card className="p-6 bg-gradient-card shadow-soft border-border/50">
-        <h2 className="text-2xl font-bold mb-6">Transações Recentes</h2>
+        <h2 className="text-2xl font-bold mb-6">Transações do Mês</h2>
         <TransactionList
-          transactions={transactions?.slice(0, 10)}
+          transactions={monthlyTransactions as TransactionModel[]}
           onDelete={deleteTransaction}
+          onEdit={handleEditTransaction}
         />
       </Card>
+
+      {/* Edit Transaction Dialog */}
+      {editingTransaction && (
+        <EditTransactionForm
+          transaction={editingTransaction}
+          onSubmit={handleUpdateTransaction}
+          onCancel={handleCancelEdit}
+        />
+      )}
     </div>
   );
 };

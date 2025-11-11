@@ -1,5 +1,5 @@
 import api from "@/shared/api/axios";
-import { AuthResponse } from "@/shared/types/auth";
+import { AuthResponse, User } from "@/shared/types/auth";
 
 export const authService = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
@@ -8,6 +8,10 @@ export const authService = {
   },
   register: async (name: string, email: string, password: string): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>('/auth/register', { name, email, password });
+    return response.data;
+  },
+  getMe: async (): Promise<User> => {
+    const response = await api.get<User>('/user/me');
     return response.data;
   },
 };

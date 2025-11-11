@@ -4,14 +4,17 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Separator } from "@/shared/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { User, Mail, Lock, Trash2, Tag } from "lucide-react";
-import { useState } from "react";
+import { User, Mail, Lock, Trash2, Tag, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { CategoryManager } from "@/features/categories/components/category-manager";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
 
 const Settings = () => {
-  const [name, setName] = useState("Usuário");
-  const [email, setEmail] = useState("usuario@exemplo.com");
+  const { user, getMe, isLoading } = useAuthStore();
+
+  const [name, setName] = useState(user?.name || "");
+  const [email, setEmail] = useState(user?.email || "");
 
   const handleSaveProfile = () => {
     toast.success("Perfil atualizado com sucesso!");
@@ -31,6 +34,10 @@ const Settings = () => {
     }
   };
 
+  useEffect(() => {
+    getMe();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl animate-fade-in">
       <div className="mb-8">
@@ -39,16 +46,17 @@ const Settings = () => {
           Gerencie suas informações pessoais e preferências
         </p>
       </div>
-
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-2 text-muted-foreground">Carregando configurações...</span>
+        </div>
+      ) : (
       <Tabs defaultValue="profile" className="space-y-6">
         <TabsList>
           <TabsTrigger value="profile">
             <User className="h-4 w-4 mr-2" />
             Perfil
-          </TabsTrigger>
-          <TabsTrigger value="categories">
-            <Tag className="h-4 w-4 mr-2" />
-            Categorias
           </TabsTrigger>
           <TabsTrigger value="security">
             <Lock className="h-4 w-4 mr-2" />
@@ -101,10 +109,6 @@ const Settings = () => {
             </Button>
           </div>
         </Card>
-        </TabsContent>
-
-        <TabsContent value="categories">
-          <CategoryManager />
         </TabsContent>
 
         <TabsContent value="security">
@@ -174,6 +178,7 @@ const Settings = () => {
           </div>
         </TabsContent>
       </Tabs>
+      )}
     </div>
   );
 };

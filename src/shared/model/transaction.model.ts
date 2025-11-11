@@ -1,8 +1,8 @@
 // src/models/Transaction.ts
 
-import { Transaction as TransactionType } from "@/types/transaction";
 import { CategoryModel } from "./category.model";
 import { CATEGORY_TYPE } from "@/shared/constants/category-type.const";
+import { Transaction } from "@/shared/types/transaction";
 
 export class TransactionModel {
   id: string;
@@ -13,7 +13,7 @@ export class TransactionModel {
   category?: CategoryModel | null;
   type: string;
 
-  constructor(data: TransactionType) {
+  constructor(data: Transaction) {
     this.id = data.id;
     this.description = data.description;
     this.amount = data.amount;
@@ -23,7 +23,7 @@ export class TransactionModel {
     this.type = data.type;
   }
 
-  static fromApi(data: TransactionType) {
+  static fromApi(data: Transaction) {
     return new TransactionModel(data);
   }
 

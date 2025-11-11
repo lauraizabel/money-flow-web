@@ -13,47 +13,50 @@ import {
 } from "@/shared/ui/select";
 import { CATEGORY_TYPE } from "@/shared/constants/category-type.const";
 import { useCategoryStore } from "@/features/categories/store/use-category-store";
-import { CreateTransactionDto } from "@/features/transactions/dto/create-transaction.dto";
+import { UpdateTransactionDto } from "@/features/transactions/dto/update-transaction.dto";
+import { TransactionModel } from "@/shared/model/transaction.model";
 import { QuickCategoryCreate } from "@/features/categories/components/quick-category-create";
 import { CurrencyHelper } from "@/shared/helpers/currency-helper";
 
-interface TransactionFormProps {
-  onSubmit: (transaction: CreateTransactionDto) => void;
+interface EditTransactionFormProps {
+  transaction: TransactionModel;
+  onSubmit: (id: string, transaction: UpdateTransactionDto) => void;
   onCancel: () => void;
 }
 
-export const TransactionForm = ({
+export const EditTransactionForm = ({
+  transaction,
   onSubmit,
   onCancel,
-}: TransactionFormProps) => {
-  const [type, setType] = useState<string>(CATEGORY_TYPE.EXPENSE);
-  const [amount, setAmount] = useState(CurrencyHelper.formatCurrency(0));
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+}: EditTransactionFormProps) => {
+  const [type, setType] = useState<string>(transaction.type);
+  const [amount, setAmount] = useState(CurrencyHelper.formatCurrency(transaction.amount));
+  const [description, setDescription] = useState(transaction.description);
+  const [category, setCategory] = useState(transaction.categoryId);
+  const [date, setDate] = useState(() => {
+    return new Date(transaction.date).toISOString().split('T')[0];
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || !description || !category || !date) return;
-    const transactionToSubmit = new CreateTransactionDto({
+    
+    const transactionToUpdate = new UpdateTransactionDto({
       type,
-      amount: CurrencyHelper.parseCurrency(amount),
+      amount: parseFloat(amount),
       description,
       date,
       categoryId: category,
-      tags: [],
+      tags: transaction.tags,
     });
 
-    onSubmit(transactionToSubmit);
-    setAmount(CurrencyHelper.formatCurrency(0));
-    setDescription("");
-    setCategory("");
-    setDate(new Date().toISOString().split('T')[0]);
+    onSubmit(transaction.id, transactionToUpdate);
   };
 
   const { expensesCategories, incomesCategories, fetchCategories } = useCategoryStore();
 
   useEffect(() => {
+    // Garantir que as categorias estejam carregadas quando o formulário for aberto
     if (expensesCategories.length === 0 && incomesCategories.length === 0) {
       fetchCategories();
     }
@@ -77,45 +80,39 @@ export const TransactionForm = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
-      <Card className="w-full max-w-md p-6 bg-gradient-card shadow-strong border-border/50">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Nova Transação</h2>
-          <Button variant="ghost" size="icon" onClick={onCancel}>
-            <X className="h-5 w-5" />
+      <Card className="w-full max-w-md bg-card border-border/50 shadow-2xl">
+        <div className="flex items-center justify-between p-6 border-b border-border/50">
+          <h2 className="text-xl font-bold">Editar Transação</h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onCancel}
+            className="hover:bg-muted"
+          >
+            <X className="h-4 w-4" />
           </Button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="space-y-2">
-            <Label>Tipo</Label>
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                type="button"
-                variant={type === CATEGORY_TYPE.INCOME ? "default" : "outline"}
-                className={
-                  type === CATEGORY_TYPE.INCOME ? "bg-success hover:bg-success/90" : ""
-                }
-                onClick={() => setType(CATEGORY_TYPE.INCOME)}
-              >
-                Receita
-              </Button>
-              <Button
-                type="button"
-                variant={type === CATEGORY_TYPE.EXPENSE ? "default" : "outline"}
-                className={
-                  type === CATEGORY_TYPE.EXPENSE
-                    ? "bg-destructive hover:bg-destructive/90"
-                    : ""
-                }
-                onClick={() => setType(CATEGORY_TYPE.EXPENSE)}
-              >
-                Despesa
-              </Button>
-            </div>
+            <Label htmlFor="type">Tipo</Label>
+            <Select value={type} onValueChange={setType} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione o tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={CATEGORY_TYPE.EXPENSE}>
+                  💸 Despesa
+                </SelectItem>
+                <SelectItem value={CATEGORY_TYPE.INCOME}>
+                  💰 Receita
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="amount">Valor (R$)</Label>
+            <Label htmlFor="amount">Valor</Label>
             <Input
               id="amount"
               placeholder="R$ 0,00"
@@ -171,7 +168,7 @@ export const TransactionForm = ({
               Cancelar
             </Button>
             <Button type="submit" className="flex-1">
-              Adicionar
+              Salvar Alterações
             </Button>
           </div>
         </form>

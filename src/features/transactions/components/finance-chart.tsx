@@ -2,6 +2,7 @@ import { Card } from "@/shared/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { CATEGORY_TYPE } from "@/shared/constants/category-type.const";
 import { TransactionModel } from "@/shared/model/transaction.model";
+import { CurrencyHelper } from "@/shared/helpers/currency-helper";
 
 interface FinanceChartProps {
   transactions: TransactionModel[];
@@ -20,13 +21,6 @@ export const FinanceChart = ({ transactions }: FinanceChartProps) => {
     { name: "Receitas", value: totalIncome, color: "hsl(var(--success))" },
     { name: "Despesas", value: totalExpense, color: "hsl(var(--destructive))" },
   ];
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
-  };
 
   if (totalIncome === 0 && totalExpense === 0) {
     return (
@@ -58,7 +52,7 @@ export const FinanceChart = ({ transactions }: FinanceChartProps) => {
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip formatter={(value) => formatCurrency(value as number)} />
+          <Tooltip formatter={(value) => CurrencyHelper.formatCurrency(value as number)} />
           <Legend />
         </PieChart>
       </ResponsiveContainer>

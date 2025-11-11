@@ -1,10 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { ArrowRight, TrendingUp, Wallet, PieChart, Shield } from "lucide-react";
 import heroImage from "@/assets/hero-finance.jpg";
+import { useAuthStore } from "@/features/auth/store/use-auth-store";
 
 const Landing = () => {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+
+  const handleEnterClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (user) {
+      e.preventDefault();
+      navigate("/dashboard");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -16,7 +27,7 @@ const Landing = () => {
               FinanceFlow
             </span>
           </div>
-          <Link to="/login">
+          <Link to="/login" onClick={handleEnterClick}>
             <Button variant="default" className="gap-2">
               Entrar
               <ArrowRight className="h-4 w-4" />
@@ -43,7 +54,7 @@ const Landing = () => {
                 orçamento sempre sob controle. Simples, rápido e eficiente.
               </p>
               <div className="flex gap-4">
-                <Link to="/login">
+                <Link to="/login" onClick={handleEnterClick}>
                   <Button size="lg" className="gap-2 shadow-medium">
                     Começar Agora
                     <ArrowRight className="h-5 w-5" />
@@ -115,8 +126,8 @@ const Landing = () => {
               </div>
               <h3 className="font-semibold text-lg mb-2">Simples e Seguro</h3>
               <p className="text-sm text-muted-foreground">
-                Interface intuitiva com foco na facilidade de uso e
-                privacidade dos seus dados.
+                Interface intuitiva com foco na facilidade de uso e privacidade
+                dos seus dados.
               </p>
             </Card>
           </div>
@@ -133,7 +144,7 @@ const Landing = () => {
             <p className="text-lg mb-8 text-white/90">
               Comece agora e tenha controle total do seu dinheiro
             </p>
-            <Link to="/login">
+            <Link to="/login" onClick={handleEnterClick}>
               <Button
                 size="lg"
                 variant="secondary"

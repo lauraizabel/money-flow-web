@@ -9,6 +9,7 @@ import {
   Target,
   FileText,
   FolderKanban,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,6 +45,11 @@ const menuItems = [
     title: "Metas",
     url: "/dashboard/goals",
     icon: Target,
+  },
+  {
+    title: "Investimentos",
+    url: "/dashboard/investments",
+    icon: TrendingUp,
   },
   {
     title: "Relatórios",
