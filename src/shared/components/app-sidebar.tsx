@@ -10,6 +10,7 @@ import {
   FileText,
   FolderKanban,
   TrendingUp,
+  ScanText,
 } from "lucide-react";
 import {
   Sidebar,
@@ -50,6 +51,11 @@ const menuItems = [
     title: "Investimentos",
     url: "/dashboard/investments",
     icon: TrendingUp,
+  },
+  {
+    title: "Faturas",
+    url: "/dashboard/invoices",
+    icon: ScanText,
   },
   {
     title: "Relatórios",

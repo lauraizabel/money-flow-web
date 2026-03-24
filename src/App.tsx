@@ -17,6 +17,7 @@ import Settings from "./features/transactions/pages/settings";
 import NotFound from "./pages/not-found";
 import Goals from "./features/goals/pages/goals";
 import Investments from "./features/investments/pages/investments";
+import Invoices from "@/features/invoices/pages/invoices";
 import { ProtectedRoute } from "@/shared/components/protected-route";
 import { PublicRoute } from "@/shared/components/public-route";
 import { useAuthStore } from "@/features/auth/store/use-auth-store";
@@ -71,6 +72,7 @@ const AppRoutes = () => {
         <Route path="categories" element={<Categories />} />
         <Route path="goals" element={<Goals />} />
         <Route path="investments" element={<Investments />} />
+        <Route path="invoices" element={<Invoices />} />
         <Route path="reports" element={<Reports />} />
         <Route path="settings" element={<Settings />} />
       </Route>
